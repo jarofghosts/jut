@@ -2,7 +2,8 @@ var through = require('through'),
     select = require('cssauron-falafel'),
     falafel = require('falafel'),
     fs = require('fs'),
-    path = require('path')
+    path = require('path'),
+    CWD = process.cwd()
 
 module.exports = jut
 
@@ -23,42 +24,48 @@ function jut(options) {
     }
 
     function read_file(filename) {
-      fs.readFile(path.resolve(process.cwd(), filename), 'utf8', process_file)
+      fs.readFile(path.resolve(CWD, filename), 'utf8', process_file)
 
       function process_file(err, data) {
         if (err) {
-          console.dir(err)
           process.exit(1)
         }
 
         var has_matched = false,
-            req
+            required,
+            req_string
 
         falafel(data, function(node) {
-          req = is_require(node)
-          if (req) {
-            req = req.value
-            if ((!relative.test(req) && options.module.indexOf(req) > -1 ||
-               (relative.test(req) &&
-                   options.module.indexOf(
-                       path.resolve(process.cwd(), req)) > -1))) {
-              found_match(req)
-            }
+          required = is_require(node)
+          if (!required) return
+
+          req_string = required.value
+
+          if (relative.test(req_string)) {
+            req_string = path.resolve(CWD, req_string)
+          }
+
+          if (options.module.indexOf(req_string) > -1) {
+            found_match(required.value)
           }
         })
-        if (files.length) return read_file(files.shift())
-        self.queue(null)
+
+        if (!files.length) return self.queue(null)
+        read_file(files.shift())
+
         function found_match(module_name) {
           if (!has_matched) {
-            if (options.fullpath) {
-              filename = path.resolve(process.cwd(), filename)
-            }
-
             has_matched = true
-            self.queue(filename + '\n')
-            if (!options.justmatch) self.queue('===\n')
+
+            self.queue(
+              (options.fullpath ? path.resolve(CWD, filename) : filename) +
+              '\n'
+            )
           }
-          if (!options.justmatch) self.queue(module_name + '\n')
+
+          if (options.justmatch) return
+
+          self.queue('===\n' + module_name + '\n')
         }
       }
     }
