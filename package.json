@@ -1,0 +1,30 @@
+{
+  "name": "jut",
+  "version": "0.0.0",
+  "description": "codebase module search",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test/test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jarofghosts/jut.git"
+  },
+  "keywords": [
+    "module",
+    "search",
+    "grep"
+  ],
+  "author": "jesse keane",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jarofghosts/jut/issues"
+  },
+  "homepage": "https://github.com/jarofghosts/jut",
+  "dependencies": {
+    "falafel": "~0.3.1",
+    "nopt": "~2.1.2",
+    "through2": "~0.2.3",
+    "cssauron-falafel": "~1.2.0"
+  }
+}
