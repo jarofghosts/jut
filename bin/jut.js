@@ -4,6 +4,7 @@ var nopt = require('nopt'),
     lsstream = require('ls-stream'),
     filter = require('stream-police'),
     split = require('split'),
+    rs = require('stream').Readable(),
     path = require('path'),
     package = require('../package.json'),
     noptions = {
@@ -18,6 +19,7 @@ var nopt = require('nopt'),
     shorts = {
       v: ['--version'],
       h: ['--help'],
+      j: ['--justmatch'],
       d: ['--dir'],
       f: ['--file'],
       F: ['--fullpath'],
@@ -28,6 +30,14 @@ var nopt = require('nopt'),
 
 if (options.version) return version()
 if (options.help) return help()
+
+rs._read = function () {
+  var self = this
+
+  options.file && options.file.forEach(function (file) {
+    self.push(file)
+  })
+}
 
 if (options.dir) {
   input = lsstream(path.resolve(options.dir))
@@ -41,7 +51,11 @@ options.module.map(function (mod) {
   return /\//.test(mod) ? path.resolve(process.cwd(), mod) : mod
 })
 
-input.pipe(filter({ verify: [/\.js$/] })).pipe(jut(options)).pipe(process.stdout)
+rs
+  .pipe(input)
+  .pipe(filter({ verify: [/\.js$/] }))
+  .pipe(jut(options))
+  .pipe(process.stdout)
 
 function version() {
   process.stdout.write('jut version ' + package.version + '\n')
