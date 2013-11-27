@@ -1,0 +1,11 @@
+================================================================
+Usage: jut [options]
+
+Options are:
+--module, -m <modulename> | Find files that require <modulename>
+--file, -f <filename>     | Search <filename> for modules
+--justmatch, -j           | Just print the filename that matches
+--fullpath, -F            | Print full path to matched file
+--version, -v             | Print current version
+--help, -h                | This thing
+

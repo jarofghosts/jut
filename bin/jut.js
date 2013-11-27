@@ -1,5 +1,6 @@
 var nopt = require('nopt'),
     jut = require('../'),
+    fs = require('fs'),
     lsstream = require('ls-stream'),
     filter = require('stream-police'),
     split = require('split'),
@@ -25,14 +26,28 @@ var nopt = require('nopt'),
     input,
     options = nopt(noptions, shorts, process.argv)
 
+if (options.version) return version()
+if (options.help) return help()
+
 if (options.dir) {
   input = lsstream(path.resolve(options.dir))
 } else {
   input = process.stdin.pipe(split())
 }
 
+options.module = (options.module || []).concat(options.argv.remain)
+
 options.module.map(function (mod) {
   return /\//.test(mod) ? path.resolve(process.cwd(), mod) : mod
 })
 
 input.pipe(filter({ verify: [/\.js$/] })).pipe(jut(options)).pipe(process.stdout)
+
+function version() {
+  process.stdout.write('jut version ' + package.version + '\n')
+}
+
+function help() {
+  version()
+  fs.createReadStream(path.join(__dirname, '../help.txt')).pipe(process.stdout)
+}
