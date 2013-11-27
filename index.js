@@ -1,4 +1,4 @@
-var through = require('through2'),
+var through = require('through'),
     select = require('cssauron-falafel'),
     falafel = require('falafel'),
     fs = require('fs'),
@@ -6,15 +6,15 @@ var through = require('through2'),
 
 module.exports = jut
 
-function jut(modules) {
+function jut(options) {
   var files = [],
       started = false,
       relative = /^\./,
       is_require = select('call id[name=require]:first-child + literal')
 
-  return through(parse_files)
+  return through(parse_files, noop) 
 
-  function parse_files(chunk, enc, next) {
+  function parse_files(chunk) {
     var self = this
     files.push(chunk.toString())
     if (!started) {
@@ -38,22 +38,31 @@ function jut(modules) {
           req = is_require(node)
           if (req) {
             req = req.value
-            if ((!relative.test(req) && modules.indexOf(req) > -1 ||
+            if ((!relative.test(req) && options.module.indexOf(req) > -1 ||
                (relative.test(req) &&
-                   modules.indexOf(path.resolve(process.cwd(), req)) > -1))) {
+                   options.module.indexOf(
+                       path.resolve(process.cwd(), req)) > -1))) {
               found_match(req)
             }
           }
         })
-        if (files.length) read_file(files.shift())
+        if (files.length) return read_file(files.shift())
+        self.queue(null)
         function found_match(module_name) {
           if (!has_matched) {
+            if (options.fullpath) {
+              filename = path.resolve(process.cwd(), filename)
+            }
+
             has_matched = true
-            self.push(filename + '\n===\n')
+            self.queue(filename + '\n')
+            if (!options.justmatch) self.queue('===\n')
           }
-          self.push(module_name + '\n')
+          if (!options.justmatch) self.queue(module_name + '\n')
         }
       }
     }
   }
 }
+
+function noop() {}
