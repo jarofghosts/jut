@@ -23,7 +23,7 @@ function jut(modules) {
     }
 
     function read_file(filename) {
-      fs.readFile(path.resolve(process.cwd(), filename), process_file)
+      fs.readFile(path.resolve(process.cwd(), filename), 'utf8', process_file)
 
       function process_file(err, data) {
         if (err) {
@@ -31,25 +31,29 @@ function jut(modules) {
           process.exit(1)
         }
 
-        var has_matched = false
+        var has_matched = false,
+            req
 
         falafel(data, function(node) {
-          var req = is_require(node)
-
+          req = is_require(node)
           if (req) {
+            req = req.value
             if ((!relative.test(req) && modules.indexOf(req) > -1 ||
-               (local_modules.indexOf(path.resolve(process.cwd(), req))))) {
-              return found_match(req)
+               (relative.test(req) &&
+                   modules.indexOf(path.resolve(process.cwd(), req)) > -1))) {
+              found_match(req)
             }
           }
+        })
+        if (files.length) read_file(files.shift())
+        function found_match(module_name) {
+          if (!has_matched) {
+            has_matched = true
+            self.push(filename + '\n===\n')
+          }
+          self.push(module_name + '\n')
         }
       }
-      function found_match(module_name) {
-        if (!has_matched) {
-          has_matched = true
-          self.push(filename) + '\n'
-        }
-        self.push(module_name) + '\n'
-      }
+    }
   }
 }
