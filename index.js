@@ -34,9 +34,10 @@ function jut(options) {
 
         var has_matched = false,
             required,
-            req_string
+            req_string,
+            line_number
 
-        data = 'function _____() {\n' + data.replace(/^#!(.*?)\n/, '') + '\n}'
+        data = 'function ____() {\n' + data.replace(/^#!(.*?)\n/, '\n') + '\n}'
 
         falafel(data, function(node) {
           required = is_require(node)
@@ -49,7 +50,8 @@ function jut(options) {
           }
 
           if (options.module.indexOf(req_string) > -1) {
-            found_match(required.value)
+            line_number = data.slice(0, node.range[0]).match(/\n/g).length
+            found_match(required.value, line_number)
           }
         })
 
@@ -71,7 +73,7 @@ function jut(options) {
           if (options.justmatch) return
           if (!options.nocolor) module_name = color.yellow(module_name)
 
-          self.queue(module_name + '\n')
+          self.queue(line_number + ': ' + module_name + '\n')
         }
       }
     }

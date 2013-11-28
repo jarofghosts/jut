@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 var nopt = require('nopt'),
     jut = require('../'),
     fs = require('fs'),
