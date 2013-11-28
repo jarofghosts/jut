@@ -11,13 +11,14 @@ locate used modules
 `jut [options] --module <module_name>`
 
 Options are:
-`--module, -m <modulename>` Find files that require `<modulename>`
-`--file, -f <filename>` Search `<filename>` for modules
-`--justmatch, -j` Just print the filename that matches
-`--fullpath, -F` Print full path to matched file
-`--nocolor, -n` Don't colorize results
-`--version, -v` Print current version
-`--help, -h` Print help
+
+* `--module, -m <modulename>` Find files that require `<modulename>`
+* `--file, -f <filename>` Search `<filename>` for modules
+* `--justmatch, -j` Just print the filename that matches
+* `--fullpath, -F` Print full path to matched file
+* `--nocolor, -n` Don't colorize results
+* `--version, -v` Print current version
+* `--help, -h` Print help
 
 ## as a module
 
