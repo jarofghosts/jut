@@ -33,6 +33,7 @@
     "through": "~2.3.4",
     "stream-police": "0.0.2",
     "ls-stream": "~1.0.0",
-    "dotpath-stream": "0.0.0"
+    "dotpath-stream": "0.0.0",
+    "bash-color": "0.0.3"
   }
 }

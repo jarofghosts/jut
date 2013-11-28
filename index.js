@@ -1,6 +1,7 @@
 var through = require('through'),
     select = require('cssauron-falafel'),
     falafel = require('falafel'),
+    color = require('bash-color'),
     fs = require('fs'),
     path = require('path'),
     CWD = process.cwd()
@@ -35,9 +36,7 @@ function jut(options) {
             required,
             req_string
 
-        data = data.replace(/^#!(.*?)\n/, '')
-
-        data = 'function _____() {\n' + data + '\n}'
+        data = 'function _____() {\n' + data.replace(/^#!(.*?)\n/, '') + '\n}'
 
         falafel(data, function(node) {
           required = is_require(node)
@@ -58,17 +57,19 @@ function jut(options) {
         read_file(files.shift())
 
         function found_match(module_name) {
+          var to_display
+
           if (!has_matched) {
             has_matched = true
+            to_display = options.fullpath ? path.resolve(CWD, filename) :
+                path.relative(CWD, filename)
+            if (!options.nocolor) to_display = color.green(to_display)
 
-            self.queue(
-              (options.fullpath ? path.resolve(CWD, filename) : 
-                  path.relative(CWD, filename)) +
-              '\n' + (options.justmatch ? '' : '===\n')
-            )
+            self.queue(to_display + '\n')
           }
 
           if (options.justmatch) return
+          if (!options.nocolor) module_name = color.yellow(module_name)
 
           self.queue(module_name + '\n')
         }

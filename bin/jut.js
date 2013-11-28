@@ -13,6 +13,7 @@ var nopt = require('nopt'),
       dir: String,
       fullpath: Boolean,
       justmatch: Boolean,
+      nocolor: Boolean,
       file: Array,
       module: Array
     },
@@ -23,7 +24,8 @@ var nopt = require('nopt'),
       d: ['--dir'],
       f: ['--file'],
       F: ['--fullpath'],
-      m: ['--module']
+      m: ['--module'],
+      n: ['--nocolor']
     },
     input,
     options = nopt(noptions, shorts, process.argv)
