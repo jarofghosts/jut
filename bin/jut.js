@@ -5,6 +5,7 @@ var nopt = require('nopt'),
     fs = require('fs'),
     lsstream = require('ls-stream'),
     filter = require('stream-police'),
+    file_stream = require('stream').Readable(),
     dps = require('dotpath-stream'),
     split = require('split'),
     path = require('path'),
@@ -35,7 +36,18 @@ var nopt = require('nopt'),
 if (options.version) return version()
 if (options.help) return help()
 
-if (options.dir) {
+file_stream._read = function () {
+  var self = this
+
+  options.file && options.file.forEach(function (file) {
+    self.push(file)
+  })
+  self.push(null)
+}
+
+if (options.file) {
+  input = file_stream
+} else if (options.dir) {
   input = lsstream(path.resolve(options.dir)).pipe(dps('path'))
 } else {
   input = process.stdin.pipe(split())

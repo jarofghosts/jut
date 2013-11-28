@@ -9,15 +9,15 @@ var through = require('through'),
 module.exports = jut
 
 function jut(options) {
-  var files = options.file || [],
+  var files = [],
       started = false,
       relative = /^\./,
-      is_require = select('call id[name=require]:first-child + literal')
+      is_require = select('call id[name=require]:first-child + literal'),
+      stream = through(parse_files, noop)
 
-  return through(parse_files, noop) 
+  return stream
 
   function parse_files(chunk) {
-    var self = this
     files.push(chunk.toString())
     if (!started) {
       started = true
@@ -35,7 +35,8 @@ function jut(options) {
         var has_matched = false,
             required,
             req_string,
-            line_number
+            line_number,
+            to_display
 
         data = 'function ____() {\n' + data.replace(/^#!(.*?)\n/, '\n') + '\n}'
 
@@ -55,25 +56,23 @@ function jut(options) {
           }
         })
 
-        if (!files.length) return self.queue(null)
+        if (!files.length) return stream.queue(null)
         read_file(files.shift())
 
         function found_match(module_name) {
-          var to_display
-
           if (!has_matched) {
             has_matched = true
             to_display = options.fullpath ? path.resolve(CWD, filename) :
                 path.relative(CWD, filename)
             if (!options.nocolor) to_display = color.green(to_display)
 
-            self.queue(to_display + '\n')
+            stream.queue(to_display + '\n')
           }
 
           if (options.justmatch) return
           if (!options.nocolor) module_name = color.yellow(module_name)
 
-          self.queue(line_number + ': ' + module_name + '\n')
+          stream.queue(line_number + ': ' + module_name + '\n')
         }
       }
     }
