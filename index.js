@@ -35,6 +35,8 @@ function jut(options) {
             required,
             req_string
 
+        data = data.replace(/^#!(.*?)\n/, '')
+
         data = 'function _____() {\n' + data + '\n}'
 
         falafel(data, function(node) {
@@ -60,14 +62,15 @@ function jut(options) {
             has_matched = true
 
             self.queue(
-              (options.fullpath ? path.resolve(CWD, filename) : filename) +
-              '\n'
+              (options.fullpath ? path.resolve(CWD, filename) : 
+                  path.relative(CWD, filename)) +
+              '\n' + (options.justmatch ? '' : '===\n')
             )
           }
 
           if (options.justmatch) return
 
-          self.queue('===\n' + module_name + '\n')
+          self.queue(module_name + '\n')
         }
       }
     }
