@@ -8,7 +8,7 @@ var through = require('through'),
 module.exports = jut
 
 function jut(options) {
-  var files = [],
+  var files = options.file || [],
       started = false,
       relative = /^\./,
       is_require = select('call id[name=require]:first-child + literal')
@@ -34,6 +34,8 @@ function jut(options) {
         var has_matched = false,
             required,
             req_string
+
+        data = 'function _____() {\n' + data + '\n}'
 
         falafel(data, function(node) {
           required = is_require(node)
