@@ -1,6 +1,8 @@
 jut
 ===
 
+[![Build Status](https://travis-ci.org/jarofghosts/jut.png?branch=master)](https://travis-ci.org/jarofghosts/jut)
+
 locate used modules
 
 ## installation
