@@ -4,7 +4,18 @@ jut
 locate used modules
 
 ## installation
+
 `npm install -g jut`
+
+## whafor?
+
+`ls *.js | jut -m badmodule`
+
+or use it with [jung](https://github.com/jarofghosts/jung) and a test runner!
+
+`jung -f '\.js$' -- test_runner '$JUNG_FILE' $(jut -m '$JUNG_FILE' -Fnj)`
+
+or something else. the world is yours.
 
 ## usage
 

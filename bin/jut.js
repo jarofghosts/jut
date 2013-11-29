@@ -55,7 +55,7 @@ if (options.file) {
 
 options.module = (options.module || []).concat(options.argv.remain)
 
-options.module.map(function (mod) {
+options.module = options.module.map(function (mod) {
   return /\//.test(mod) ? path.resolve(process.cwd(), mod) : mod
 })
 

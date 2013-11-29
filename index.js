@@ -15,6 +15,8 @@ function jut(options) {
       is_require = select('call id[name=require]:first-child + literal'),
       stream = through(parse_files, noop)
 
+  if (options.dir) CWD = path.resolve(options.dir)
+
   return stream
 
   function parse_files(chunk) {
@@ -47,7 +49,9 @@ function jut(options) {
           req_string = required.value
 
           if (relative.test(req_string)) {
-            req_string = path.resolve(CWD, req_string)
+            if (/\/$/.test(req_string)) req_string += 'index.js'
+            if (!/\.(js|json)$/.test(req_string)) req_string += '.js'
+            req_string = path.resolve(path.dirname(filename), req_string)
           }
 
           if (options.module.indexOf(req_string) > -1) {
