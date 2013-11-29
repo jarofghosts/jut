@@ -6,14 +6,15 @@ var assert = require('assert'),
 
 rs._read = function () {
   this.push(path.join(__dirname, 'dummy.js'))
+  this.push(path.join(__dirname, 'fake.js'))
   this.push(path.join(__dirname, 'pluto.js'))
   this.push(null)
 }
 
-var test = rs.pipe(jut({ nocolor: true, module: ['foop'] }))
+var test = rs.pipe(jut({ nocolor: true, module: ['barb'] }))
 test.on('data', function (data) {
   result.push(data.toString())
 })
 test.on('end', function (data) {
-  assert.equal(result.join(''), 'test/dummy.js\n1: foop\n')
+  assert.equal(result.join(''), '')
 })
