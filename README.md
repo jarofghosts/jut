@@ -15,7 +15,7 @@ locate used modules
 
 or use it with [jung](https://github.com/jarofghosts/jung) and a test runner!
 
-`jung -f '\.js$' -- test_runner '$JUNG_FILE' $(jut -m '$JUNG_FILE' -Fnj)`
+`jung -f '\.js$' -- test_runner $(ls tests/**/*.js | jut -m '$JUNG_FILE' -Fnj)`
 
 or something else. the world is yours.
 
@@ -58,7 +58,7 @@ ls('apps')
     .pipe(convert('path')) // reduce ls-stream object to path string
     .pipe(filter({ verify: [/\.js$/] })) // only .js extension
     .pipe(jut(options)) // right over to jut
-    .pipe(fs.createWriteStream('falafel-apps.txt') // out to a file
+    .pipe(fs.createWriteStream('falafel-apps.txt')) // out to a file
 ```
 
 ## license
