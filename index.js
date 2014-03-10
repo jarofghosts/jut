@@ -1,19 +1,22 @@
-var through = require('through'),
-    select = require('cssauron-falafel'),
-    falafel = require('falafel'),
-    color = require('bash-color'),
-    fs = require('fs'),
-    path = require('path'),
-    CWD = process.cwd()
+var select = require('cssauron-falafel')
+  , color = require('bash-color')
+  , through = require('through')
+  , falafel = require('falafel')
+  , path = require('path')
+  , fs = require('fs')
+
+var CWD = process.cwd()
 
 module.exports = jut
 
 function jut(options) {
-  var files = [],
-      started = false,
-      relative = /^\./,
-      is_require = select('call id[name=require]:first-child + literal'),
-      stream = through(parse_files, noop)
+  var is_require = select('call id[name=require]:first-child + literal')
+
+  var files = []
+    , started = false
+    , relative = /^\./
+
+  var stream = through(parse_files, noop)
 
   if (options.dir) CWD = path.resolve(options.dir)
 
@@ -30,15 +33,13 @@ function jut(options) {
       fs.readFile(path.resolve(CWD, filename), 'utf8', process_file)
 
       function process_file(err, data) {
-        if (err) {
-          process.exit(1)
-        }
+        if (err) process.exit(1)
 
-        var has_matched = false,
-            required,
-            req_string,
-            line_number,
-            to_display
+        var has_matched = false
+          , line_number
+          , req_string
+          , to_display
+          , required
 
         data = 'function ____() {\n' + data.replace(/^#!(.*?)\n/, '\n') + '\n}'
 
@@ -66,8 +67,10 @@ function jut(options) {
         function found_match(module_name) {
           if (!has_matched) {
             has_matched = true
-            to_display = options.fullpath ? path.resolve(CWD, filename) :
+            to_display = options.fullpath ?
+                path.resolve(CWD, filename) :
                 path.relative(CWD, filename)
+
             if (!options.nocolor) to_display = color.green(to_display)
 
             stream.queue(to_display + '\n')

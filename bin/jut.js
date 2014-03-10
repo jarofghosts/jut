@@ -1,37 +1,40 @@
 #!/usr/bin/env node
 
-var nopt = require('nopt'),
-    jut = require('../'),
-    fs = require('fs'),
-    lsstream = require('ls-stream'),
-    filter = require('stream-police'),
-    file_stream = require('stream').Readable(),
-    dps = require('dotpath-stream'),
-    split = require('split'),
-    path = require('path'),
-    package = require('../package.json'),
-    noptions = {
-      version: Boolean,
-      help: Boolean,
-      dir: String,
-      fullpath: Boolean,
-      justmatch: Boolean,
-      nocolor: Boolean,
-      file: Array,
-      module: Array
-    },
-    shorts = {
-      v: ['--version'],
-      h: ['--help'],
-      j: ['--justmatch'],
-      d: ['--dir'],
-      f: ['--file'],
-      F: ['--fullpath'],
-      m: ['--module'],
-      n: ['--nocolor']
-    },
-    input,
-    options = nopt(noptions, shorts, process.argv)
+var file_stream = require('stream').Readable()
+  , package = require('../package.json')
+  , filter = require('stream-police')
+  , lsstream = require('ls-stream')
+  , dps = require('dotpath-stream')
+  , split = require('split')
+  , path = require('path')
+  , nopt = require('nopt')
+  , jut = require('../')
+  , fs = require('fs')
+
+var noptions = {
+    version: Boolean
+  , help: Boolean
+  , dir: String
+  , fullpath: Boolean
+  , justmatch: Boolean
+  , nocolor: Boolean
+  , file: Array
+  , module: Array
+}
+
+var shorts = {
+    v: ['--version']
+  , h: ['--help']
+  , j: ['--justmatch']
+  , d: ['--dir']
+  , f: ['--file']
+  , F: ['--fullpath']
+  , m: ['--module']
+  , n: ['--nocolor']
+}
+
+var options = nopt(noptions, shorts, process.argv)
+  , input
 
 if (options.version) return version()
 if (options.help) return help()
@@ -60,7 +63,7 @@ options.module = options.module.map(function (mod) {
 })
 
 input
-  .pipe(filter({ verify: [/\.js$/] }))
+  .pipe(filter({verify: [/\.js$/]}))
   .pipe(jut(options))
   .pipe(process.stdout)
 
