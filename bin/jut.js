@@ -36,8 +36,8 @@ var shorts = {
 var options = nopt(noptions, shorts, process.argv)
   , input
 
-if (options.version) return version()
-if (options.help) return help()
+if(options.version) return version()
+if(options.help) return help()
 
 file_stream._read = function () {
   var self = this
@@ -48,9 +48,17 @@ file_stream._read = function () {
   self.push(null)
 }
 
-if (options.file) {
+if(!options.file && !options.dir && process.stdin.isTTY) {
+  options.dir = process.cwd()
+}
+
+if(!options.module && options.argv.remain.length) {
+  options.module = options.argv.remain
+}
+
+if(options.file) {
   input = file_stream
-} else if (options.dir) {
+} else if(options.dir) {
   input = lsstream(path.resolve(options.dir)).pipe(dps('path'))
 } else {
   input = process.stdin.pipe(split())
