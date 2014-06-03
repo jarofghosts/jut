@@ -1,9 +1,10 @@
+var path = require('path')
+  , fs = require('fs')
+
 var select = require('cssauron-falafel')
   , color = require('bash-color')
   , through = require('through')
   , falafel = require('falafel')
-  , path = require('path')
-  , fs = require('fs')
 
 var CWD = process.cwd()
 
@@ -24,7 +25,7 @@ function jut(options) {
 
   function parse_files(chunk) {
     files.push(chunk.toString())
-    if (!started) {
+    if(!started) {
       started = true
       read_file(files.shift())
     }
@@ -33,7 +34,7 @@ function jut(options) {
       fs.readFile(path.resolve(CWD, filename), 'utf8', process_file)
 
       function process_file(err, data) {
-        if (err) process.exit(1)
+        if(err) process.exit(1)
 
         var has_matched = false
           , line_number
@@ -45,39 +46,39 @@ function jut(options) {
 
         falafel(data, function(node) {
           required = is_require(node)
-          if (!required) return
+          if(!required) return
 
           req_string = required.value
 
-          if (relative.test(req_string)) {
-            if (/\/$/.test(req_string)) req_string += 'index.js'
-            if (!/\.(js|json)$/.test(req_string)) req_string += '.js'
+          if(relative.test(req_string)) {
+            if(/\/$/.test(req_string)) req_string += 'index.js'
+            if(!/\.(js|json)$/.test(req_string)) req_string += '.js'
             req_string = path.resolve(path.dirname(filename), req_string)
           }
 
-          if (options.module.indexOf(req_string) > -1) {
+          if(options.module.indexOf(req_string) > -1) {
             line_number = data.slice(0, node.range[0]).match(/\n/g).length
             found_match(required.value, line_number)
           }
         })
 
-        if (!files.length) return stream.queue(null)
+        if(!files.length) return stream.queue(null)
         read_file(files.shift())
 
         function found_match(module_name) {
-          if (!has_matched) {
+          if(!has_matched) {
             has_matched = true
             to_display = options.fullpath ?
                 path.resolve(CWD, filename) :
                 path.relative(CWD, filename)
 
-            if (!options.nocolor) to_display = color.green(to_display)
+            if(!options.nocolor) to_display = color.green(to_display)
 
             stream.queue(to_display + '\n')
           }
 
-          if (options.justmatch) return
-          if (!options.nocolor) module_name = color.yellow(module_name)
+          if(options.justmatch) return
+          if(!options.nocolor) module_name = color.yellow(module_name)
 
           stream.queue(line_number + ': ' + module_name + '\n')
         }
