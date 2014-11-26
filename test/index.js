@@ -67,7 +67,7 @@ test('finds "required-into" modules with dot', function(t) {
 test('finds relative modules', function(t) {
   t.plan(1)
 
-  var jutStream = jut({nocolor: true, module: ['./herp'], dir: './test'})
+  var jutStream = jut({nocolor: true, module: ['./test/herp']})
     , result = []
 
   jutStream.on('data', function(data) {
@@ -75,7 +75,27 @@ test('finds relative modules', function(t) {
   })
 
   jutStream.on('end', function() {
-    t.equal(result.join(''), 'pluto.js\n4: ./herp\n')
+    t.equal(result.join(''), 'test/pluto.js\n4: ./herp\n')
+  })
+
+  jutStream.write(path.join(__dirname, 'dummy.js'))
+  jutStream.write(path.join(__dirname, 'pluto.js'))
+
+  jutStream.end()
+})
+
+test('finds relative modules with extension', function(t) {
+  t.plan(1)
+
+  var jutStream = jut({nocolor: true, module: ['./test/herp.js']})
+    , result = []
+
+  jutStream.on('data', function(data) {
+    result.push(data.toString())
+  })
+
+  jutStream.on('end', function() {
+    t.equal(result.join(''), 'test/pluto.js\n4: ./herp\n')
   })
 
   jutStream.write(path.join(__dirname, 'dummy.js'))
@@ -108,26 +128,6 @@ test('finds implicit matches without extension', function(t) {
   t.plan(1)
 
   var jutStream = jut({nocolor: true, module: ['./test/herp/index']})
-    , result = []
-
-  jutStream.on('data', function(data) {
-    result.push(data.toString())
-  })
-
-  jutStream.on('end', function() {
-    t.equal(result.join(''), 'test/pluto.js\n4: ./herp\n')
-  })
-
-  jutStream.write(path.join(__dirname, 'dummy.js'))
-  jutStream.write(path.join(__dirname, 'pluto.js'))
-
-  jutStream.end()
-})
-
-test('finds relative deep modules', function(t) {
-  t.plan(1)
-
-  var jutStream = jut({nocolor: true, module: ['./test/herp']})
     , result = []
 
   jutStream.on('data', function(data) {
