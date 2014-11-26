@@ -1,3 +1,5 @@
-var test = require('foop'),
-    toast = require('feep'),
-    forp = require('fawp')
+var test = require('foop')
+  , toast = require('feep')
+  , horp = require('foop/joop')
+  , forp = require('fawp')
+  , slorp = require('foop/joop.doop')

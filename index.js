@@ -6,85 +6,118 @@ var select = require('cssauron-falafel')
   , through = require('through')
   , falafel = require('falafel')
 
-var CWD = process.cwd()
-
 module.exports = jut
 
 function jut(options) {
-  var is_require = select('call id[name=require]:first-child + literal')
+  var CWD = process.cwd()
+  var isRequire = select('call id[name=require]:first-child + literal')
 
   var files = []
     , started = false
     , relative = /^\./
 
-  var stream = through(parse_files, noop)
+  var stream = through(parseFiles, Function())
 
-  if (options.dir) CWD = path.resolve(options.dir)
+  if(options.dir) CWD = path.resolve(options.dir)
+
+  options.module = options.module.map(makeAbsolute)
 
   return stream
 
-  function parse_files(chunk) {
+  function makeAbsolute(x) {
+    if(relative.test(x)) return path.resolve(CWD, x)
+
+    return x
+  }
+
+  function parseFiles(chunk) {
     files.push(chunk.toString())
     if(!started) {
       started = true
-      read_file(files.shift())
+      readFile(files.shift())
     }
 
-    function read_file(filename) {
-      fs.readFile(path.resolve(CWD, filename), 'utf8', process_file)
+    function readFile(filename) {
+      fs.readFile(path.resolve(CWD, filename), 'utf8', processFile)
 
-      function process_file(err, data) {
+      function processFile(err, data) {
         if(err) process.exit(1)
 
-        var has_matched = false
-          , line_number
-          , req_string
-          , to_display
+        var hasMatched = false
+          , lineNumber
+          , reqString
+          , toDisplay
           , required
 
         data = 'function ____() {\n' + data.replace(/^#!(.*?)\n/, '\n') + '\n}'
 
-        falafel(data, function(node) {
-          required = is_require(node)
-          if(!required) return
-
-          req_string = required.value
-
-          if(relative.test(req_string)) {
-            if(/\/$/.test(req_string)) req_string += 'index.js'
-            if(!/\.(js|json)$/.test(req_string)) req_string += '.js'
-            req_string = path.resolve(path.dirname(filename), req_string)
-          }
-
-          if(options.module.indexOf(req_string) > -1) {
-            line_number = data.slice(0, node.range[0]).match(/\n/g).length
-            found_match(required.value, line_number)
-          }
-        })
+        if(/require/.test(data)) {
+          falafel(data, checkNode)
+        }
 
         if(!files.length) return stream.queue(null)
-        read_file(files.shift())
 
-        function found_match(module_name) {
-          if(!has_matched) {
-            has_matched = true
-            to_display = options.fullpath ?
+        readFile(files.shift())
+
+        function checkNode(node) {
+          required = isRequire(node)
+
+          if(!required) return
+
+          reqString = required.value
+
+          if(relative.test(reqString)) return testRelative()
+
+          doTest(reqString)
+
+          function doTest(str) {
+            if(options.module.indexOf(str) > -1) {
+              lineNumber = data.slice(0, node.range[0]).match(/\n/g).length
+              foundMatch(required.value, lineNumber)
+
+              return true
+            }
+
+            return false
+          }
+
+          function testRelative() {
+            reqString = path.resolve(path.dirname(filename), reqString)
+
+            if(doTest(reqString)) return
+            if(/\/index\.js/.test(reqString)) return
+
+            reqString += reqString.slice(-1) === '/' ?
+              'index' :
+              '/index'
+
+            if(doTest(reqString)) return
+            if(!/\.(js|json)$/.test(reqString)) reqString += '.js'
+
+            doTest(reqString)
+          }
+        }
+
+
+        function foundMatch(moduleName) {
+          if(!hasMatched) {
+            hasMatched = true
+
+            toDisplay = options.fullpath ?
                 path.resolve(CWD, filename) :
                 path.relative(CWD, filename)
 
-            if(!options.nocolor) to_display = color.green(to_display)
+            if(!options.nocolor) toDisplay = color.green(toDisplay)
 
-            stream.queue(to_display + '\n')
+            stream.queue(toDisplay + '\n')
           }
 
           if(options.justmatch) return
-          if(!options.nocolor) module_name = color.yellow(module_name)
+          if(!options.nocolor) moduleName = color.yellow(moduleName)
 
-          stream.queue(line_number + ': ' + module_name + '\n')
+          stream.queue(lineNumber + ': ' + moduleName + '\n')
         }
       }
     }
   }
 }
-
-function noop() {}

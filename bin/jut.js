@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var file_stream = require('stream').Readable()
+var fileStream = require('stream').Readable()
   , package = require('../package.json')
   , filter = require('stream-police')
   , lsstream = require('ls-stream')
@@ -39,7 +39,7 @@ var options = nopt(noptions, shorts, process.argv)
 if(options.version) return version()
 if(options.help) return help()
 
-file_stream._read = function () {
+fileStream._read = function () {
   var self = this
 
   options.file && options.file.forEach(function (file) {
@@ -57,7 +57,7 @@ if(!options.module && options.argv.remain.length) {
 }
 
 if(options.file) {
-  input = file_stream
+  input = fileStream
 } else if(options.dir) {
   input = lsstream(path.resolve(options.dir)).pipe(dps('path'))
 } else {
@@ -67,7 +67,7 @@ if(options.file) {
 options.module = (options.module || []).concat(options.argv.remain)
 
 options.module = options.module.map(function (mod) {
-  return /\//.test(mod) ? path.resolve(process.cwd(), mod) : mod
+  return /^\./.test(mod) ? path.resolve(process.cwd(), mod) : mod
 })
 
 input

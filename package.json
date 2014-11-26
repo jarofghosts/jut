@@ -8,7 +8,7 @@
   },
   "main": "index.js",
   "scripts": {
-    "test": "node test/test.js && node test/test-multi.js && node test/test-multi-module.js && node test/test-none.js"
+    "test": "node test/index.js"
   },
   "repository": {
     "type": "git",
@@ -35,5 +35,8 @@
     "ls-stream": "1.0.0",
     "dotpath-stream": "0.0.0",
     "bash-color": "0.0.3"
+  },
+  "devDependencies": {
+    "tape": "^3.0.3"
   }
 }
