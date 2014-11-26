@@ -18,8 +18,6 @@ function jut(options) {
 
   var stream = through(parseFiles, Function())
 
-  if(options.dir) CWD = path.resolve(options.dir)
-
   options.module = options.module.map(makeAbsolute)
 
   return stream
@@ -32,6 +30,7 @@ function jut(options) {
 
   function parseFiles(chunk) {
     files.push(chunk.toString())
+
     if(!started) {
       started = true
       readFile(files.shift())
@@ -86,6 +85,7 @@ function jut(options) {
 
             if(doTest(reqString)) return
             if(/\/index\.js/.test(reqString)) return
+            if(doTest(reqString + '.js')) return
 
             reqString += reqString.slice(-1) === '/' ?
               'index' :
