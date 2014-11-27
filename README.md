@@ -1,7 +1,8 @@
 jut
 ===
 
-[![Build Status](https://travis-ci.org/jarofghosts/jut.png?branch=master)](https://travis-ci.org/jarofghosts/jut)
+[![Build Status](http://img.shields.io/travis/jarofghosts/jut.svg?style=flat)](https://travis-ci.org/jarofghosts/jut)
+[![npm install](http://img.shields.io/npm/dm/jut.svg?style=flat)](https://www.npmjs.org/package/jut)
 
 locate used modules
 
@@ -11,7 +12,7 @@ locate used modules
 
 ## whafor?
 
-`ls *.js | jut -m badmodule`
+`jut -m badmodule`
 
 or use it with [jung](https://github.com/jarofghosts/jung) and a test runner!
 
@@ -21,11 +22,12 @@ or something else. the world is yours.
 
 ## usage
 
-`jut [options] --module <module_name>`
+`jut [options] --module <modulename>`
 
 Options are:
 
 * `--module, -m <modulename>` Find files that require `<modulename>`
+* `--dir, -d <dirname>` Search files in `<dirname>` recursively
 * `--file, -f <filename>` Search `<filename>` for modules
 * `--justmatch, -j` Just print the filename that matches
 * `--fullpath, -F` Print full path to matched file
@@ -35,30 +37,24 @@ Options are:
 
 ## as a module
 
-give it a stream of javascript files and get a stream of files that use
-`module`.
+`jut(['array', 'of', 'module', './names']) -> TransformStream`
 
+stream it filenames, and get out objects with match objects.
 something like:
 
 ```js
-var jut = require('jut'),
-    ls = require('ls-stream'), // for example
-    convert = require('dotpath-stream'),
-    filter = require('stream-police'),
-    fs = require('fs')
-
-var options = {
-  module: 'falafel', // for example
-  justmatch: false, // default
-  fullpath: false, // default
-  nocolor: false // default
-}
+var jut = require('jut')
+  , ls = require('ls-stream') // for example
+  , convert = require('dotpath-stream')
+  , filter = require('stream-police')
 
 ls('apps')
-    .pipe(convert('path')) // reduce ls-stream object to path string
-    .pipe(filter({ verify: [/\.js$/] })) // only .js extension
-    .pipe(jut(options)) // right over to jut
-    .pipe(fs.createWriteStream('falafel-apps.txt')) // out to a file
+  .pipe(convert('path')) // reduce ls-stream object to path string
+  .pipe(filter({verify: [/\.js$/]})) // only .js files
+  .pipe(jut(['falafel'])) // right over to jut
+  .on('data', function(data) {
+    console.log(data) // {filename: fullpath, line: lineNumber, module: 'falafel'}
+  })
 ```
 
 ## license

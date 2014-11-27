@@ -1,7 +1,8 @@
-================================================================
+===================================================================
 Usage: jut [options]
 
 Options are:
+--dir, -d <dirname>       | Look through files in <dir> recursively
 --module, -m <modulename> | Find files that require <modulename>
 --file, -f <filename>     | Search <filename> for modules
 --justmatch, -j           | Just print the filename that matches

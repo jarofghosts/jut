@@ -1,15 +1,21 @@
 #!/usr/bin/env node
 
 var fileStream = require('stream').Readable()
-  , package = require('../package.json')
-  , filter = require('stream-police')
+  , path = require('path')
+  , fs = require('fs')
+
+var filter = require('stream-police')
   , lsstream = require('ls-stream')
   , dps = require('dotpath-stream')
+  , color = require('bash-color')
+  , through = require('through')
   , split = require('split')
-  , path = require('path')
   , nopt = require('nopt')
+
+var package = require('../package.json')
   , jut = require('../')
-  , fs = require('fs')
+
+var CWD = process.cwd()
 
 var noptions = {
     version: Boolean
@@ -42,14 +48,14 @@ if(options.help) return help()
 fileStream._read = function () {
   var self = this
 
-  options.file && options.file.forEach(function (file) {
+  options.file && options.file.forEach(function(file) {
     self.push(file)
   })
   self.push(null)
 }
 
 if(!options.file && !options.dir && process.stdin.isTTY) {
-  options.dir = process.cwd()
+  options.dir = CWD
 }
 
 if(!options.module && options.argv.remain.length) {
@@ -66,14 +72,43 @@ if(options.file) {
 
 options.module = (options.module || []).concat(options.argv.remain)
 
-options.module = options.module.map(function (mod) {
-  return /^\./.test(mod) ? path.resolve(process.cwd(), mod) : mod
-})
-
 input
   .pipe(filter({verify: [/\.js$/]}))
-  .pipe(jut(options))
+  .pipe(jut(options.module))
+  .pipe(formatStream())
   .pipe(process.stdout)
+
+function formatStream() {
+  var stream = through(write)
+    , filename
+
+  return stream
+
+  function write(data) {
+    var moduleName
+      , toDisplay
+
+    if(data.filename !== filename) {
+      filename = data.filename
+
+      toDisplay = options.fullpath ?
+          path.resolve(CWD, filename) :
+          path.relative(CWD, filename)
+
+      if(!options.nocolor) toDisplay = color.green(toDisplay)
+
+      stream.queue(toDisplay + '\n')
+    }
+
+    moduleName = data.module
+
+    if(options.justmatch) return
+    if(!options.nocolor) moduleName = color.yellow(moduleName)
+
+    stream.queue(data.line + ': ' + moduleName + '\n')
+  }
+
+}
 
 function version() {
   process.stdout.write('jut version ' + package.version + '\n')
