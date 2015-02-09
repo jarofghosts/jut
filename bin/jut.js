@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 var fileStream = require('stream').Readable()
+  , util = require('util')
   , path = require('path')
   , fs = require('fs')
 
@@ -79,7 +80,8 @@ input
   .pipe(process.stdout)
 
 function formatStream() {
-  var stream = through(write)
+  var stream = through(write, end)
+    , total = 0
     , filename
 
   return stream
@@ -106,8 +108,12 @@ function formatStream() {
     if(!options.nocolor) moduleName = color.yellow(moduleName)
 
     stream.queue(data.line + ': ' + moduleName + '\n')
+    ++total
   }
 
+  function end() {
+    stream.queue(util.format('\n%d found.\n', total))
+  }
 }
 
 function version() {
