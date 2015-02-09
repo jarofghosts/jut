@@ -102,9 +102,10 @@ function formatStream() {
       stream.queue(toDisplay + '\n')
     }
 
+    if(options.justmatch) return
+
     moduleName = data.module
 
-    if(options.justmatch) return
     if(!options.nocolor) moduleName = color.yellow(moduleName)
 
     stream.queue(data.line + ': ' + moduleName + '\n')
@@ -112,7 +113,11 @@ function formatStream() {
   }
 
   function end() {
-    stream.queue(util.format('\n%d found.\n', total))
+    if(!options.justmatch) {
+      stream.queue(util.format('\n%d found.\n', total))
+    }
+
+    stream.queue(null)
   }
 }
 
