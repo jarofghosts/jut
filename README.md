@@ -35,6 +35,12 @@ Options are:
 * `--version, -v` Print current version
 * `--help, -h` Print help
 
+## notes
+
+in order to support searching for "deep-requires", (such as
+`module-name/sub-module`) searching for a "local" file (such as
+`../../module-name/sub-module`) requires a leading `./` in the module name.
+
 ## as a module
 
 `jut(['array', 'of', 'module', './names']) -> TransformStream`
