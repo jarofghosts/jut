@@ -43,7 +43,7 @@ in order to support searching for "deep-requires", (such as
 
 ## as a module
 
-`jut(['array', 'of', 'module', './names']) -> TransformStream`
+`jut(['array', 'of', 'module', './names']) -> DuplexStream`
 
 stream it filenames, and get out objects with match objects.
 something like:
