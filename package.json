@@ -1,6 +1,6 @@
 {
   "name": "jut",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "codebase module search",
   "preferGlobal": true,
   "bin": {
