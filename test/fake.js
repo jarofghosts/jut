@@ -1,2 +1,3 @@
 var test = require('foop'),
-    forp = require('fabio')
+    forp = require('fabio'),
+    herp = require('foop/')

@@ -2,6 +2,7 @@ var path = require('path')
   , fs = require('fs')
 
 var select = require('cssauron-falafel')
+  , escape = require('quotemeta')
   , through = require('through')
   , falafel = require('falafel')
 
@@ -56,7 +57,7 @@ function jut(modules) {
         reqString = required.value
 
         if(!(relative.test(reqString) && testRelative()) &&
-            modules.indexOf(reqString) === -1) return
+            !modules.filter(checkRequires(reqString)).length) return
 
         stream.queue({
             line: data.slice(0, node.range[0]).match(/\n/g).length
@@ -80,6 +81,13 @@ function jut(modules) {
           return false
         }
       }
+    }
+  }
+
+  function checkRequires(reqString) {
+    return function(x) {
+      return x === reqString ||
+          new RegExp('^' + escape(x) + '/.+').test(reqString)
     }
   }
 }

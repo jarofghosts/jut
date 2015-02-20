@@ -26,15 +26,16 @@
   },
   "homepage": "https://github.com/jarofghosts/jut",
   "dependencies": {
-    "falafel": "0.3.1",
-    "nopt": "2.1.2",
+    "bash-color": "0.0.3",
     "cssauron-falafel": "1.2.0",
-    "split": "0.2.10",
-    "through": "2.3.4",
-    "stream-police": "0.0.2",
-    "ls-stream": "1.0.0",
     "dotpath-stream": "0.0.0",
-    "bash-color": "0.0.3"
+    "falafel": "0.3.1",
+    "ls-stream": "1.0.0",
+    "nopt": "2.1.2",
+    "quotemeta": "0.0.0",
+    "split": "0.2.10",
+    "stream-police": "0.0.2",
+    "through": "2.3.4"
   },
   "devDependencies": {
     "tape": "^3.0.3"
