@@ -31,6 +31,7 @@ Options are:
 * `--file, -f <filename>` Search `<filename>` for modules
 * `--justmatch, -j` Just print the filename that matches
 * `--fullpath, -F` Print full path to matched file
+* `--require, -r <name>` Specify a different function name from `require`
 * `--nocolor, -n` Don't colorize results
 * `--version, -v` Print current version
 * `--help, -h` Print help
@@ -43,7 +44,7 @@ in order to support searching for "deep-requires", (such as
 
 ## as a module
 
-`jut(['array', 'of', 'module', './names']) -> DuplexStream`
+`jut(['array', 'of', 'module', './names'], ['aliases']) -> DuplexStream`
 
 stream it filenames, and get out objects with match objects.
 something like:
