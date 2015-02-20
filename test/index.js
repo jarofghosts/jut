@@ -17,7 +17,11 @@ test('finds regular modules', function(t) {
   jutStream.on('end', function() {
     t.deepEqual(
         result
-      , [{filename: fixPath('dummy.js'), line: 1, module: 'foop'}]
+      , [
+            {filename: fixPath('dummy.js'), line: 1, module: 'foop'}
+          , {filename: fixPath('dummy.js'), line: 3, module: 'foop/joop'}
+          , {filename: fixPath('dummy.js'), line: 5, module: 'foop/joop.doop'}
+        ]
     )
   })
 
@@ -180,6 +184,8 @@ test('can search for multiple modules', function(t) {
         result
       , [
             {filename: fixPath('dummy.js'), line: 1, module: 'foop'}
+          , {filename: fixPath('dummy.js'), line: 3, module: 'foop/joop'}
+          , {filename: fixPath('dummy.js'), line: 5, module: 'foop/joop.doop'}
           , {filename: fixPath('fake.js'), line: 1, module: 'foop'}
           , {filename: fixPath('fake.js'), line: 2, module: 'fabio'}
         ]
@@ -207,6 +213,8 @@ test('can search multiple files', function(t) {
         result
       , [
             {filename: fixPath('dummy.js'), line: 1, module: 'foop'}
+          , {filename: fixPath('dummy.js'), line: 3, module: 'foop/joop'}
+          , {filename: fixPath('dummy.js'), line: 5, module: 'foop/joop.doop'}
           , {filename: fixPath('fake.js'), line: 1, module: 'foop'}
         ]
     )
