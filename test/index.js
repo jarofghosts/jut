@@ -169,6 +169,30 @@ test('finds implicit matches without extension', function(t) {
   jutStream.end()
 })
 
+test('allows changing require alias', function(t) {
+  t.plan(1)
+
+  var jutStream = jut(['./test/herp'], ['iunno'])
+    , result = []
+
+  jutStream.on('data', function(data) {
+    result.push(data)
+  })
+
+  jutStream.on('end', function() {
+    t.deepEqual(
+        result
+      , [
+            {filename: fixPath('pluto.js'), line: 5, module: './herp'}
+        ]
+    )
+  })
+
+  jutStream.write(fixPath('dummy.js'))
+  jutStream.write(fixPath('pluto.js'))
+
+  jutStream.end()
+})
 test('can search for multiple modules', function(t) {
   t.plan(1)
 
