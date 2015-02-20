@@ -1,4 +1,5 @@
 var path = require('path')
+  , util = require('util')
   , fs = require('fs')
 
 var select = require('cssauron-falafel')
@@ -11,9 +12,10 @@ var CWD = process.cwd()
 
 module.exports = jut
 
-function jut(modules) {
-  var isRequire = select('call id[name=require]:first-child + literal')
-    , stream = through(parseFiles, Function())
+function jut(modules, _aliases) {
+  var aliases = _aliases || ['require']
+
+  var stream = through(parseFiles, Function())
     , started = false
     , files = []
 
@@ -30,6 +32,20 @@ function jut(modules) {
     }
   }
 
+  function isRequire(node) {
+    var selector
+      , result
+      , alias
+
+    for(var i = 0, len = aliases.length; i < len; ++i) {
+      alias = aliases[i]
+      selector = util.format('call id[name=%s]:first-child + literal', alias)
+      result = select(selector)(node)
+
+      if(result) return result
+    }
+  }
+
   function readFile(filename) {
     fs.readFile(path.resolve(CWD, filename), 'utf8', processFile)
 
@@ -41,9 +57,7 @@ function jut(modules) {
 
       data = 'function ____() {\n' + data.replace(/^#!(.*?)\n/, '\n') + '\n}'
 
-      if(data.indexOf('require') > -1) {
-        falafel(data, checkNode)
-      }
+      falafel(data, checkNode)
 
       if(!files.length) return stream.queue(null)
 

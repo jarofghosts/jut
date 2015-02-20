@@ -23,6 +23,7 @@ var noptions = {
   , help: Boolean
   , dir: String
   , fullpath: Boolean
+  , require: Array
   , justmatch: Boolean
   , nocolor: Boolean
   , file: Array
@@ -34,6 +35,7 @@ var shorts = {
   , h: ['--help']
   , j: ['--justmatch']
   , d: ['--dir']
+  , r: ['--require']
   , f: ['--file']
   , F: ['--fullpath']
   , m: ['--module']
@@ -75,7 +77,7 @@ options.module = (options.module || []).concat(options.argv.remain)
 
 input
   .pipe(filter({verify: [/\.js$/]}))
-  .pipe(jut(options.module))
+  .pipe(jut(options.module, options.require))
   .pipe(formatStream())
   .pipe(process.stdout)
 
