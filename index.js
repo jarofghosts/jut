@@ -13,7 +13,7 @@ var CWD = process.cwd()
 module.exports = jut
 
 function jut(modules, _aliases) {
-  var aliases = _aliases || ['require']
+  var aliases = (_aliases || ['require']).map(toSelector)
 
   var stream = through(parseFiles, Function())
     , started = false
@@ -22,6 +22,10 @@ function jut(modules, _aliases) {
   modules = modules.map(makeAbsolute)
 
   return stream
+
+  function toSelector(alias) {
+    return select(util.format('call id[name=%s]:first-child + literal', alias))
+  }
 
   function parseFiles(chunk) {
     files.push(chunk.toString())
@@ -33,14 +37,10 @@ function jut(modules, _aliases) {
   }
 
   function isRequire(node) {
-    var selector
-      , result
-      , alias
+    var result
 
     for(var i = 0, len = aliases.length; i < len; ++i) {
-      alias = aliases[i]
-      selector = util.format('call id[name=%s]:first-child + literal', alias)
-      result = select(selector)(node)
+      result = aliases[i](node)
 
       if(result) return result
     }
