@@ -59,7 +59,7 @@ ls('apps')
   .pipe(convert('path')) // reduce ls-stream object to path string
   .pipe(filter(function(data) {
     return /\.js$/.test(data.toString()) // only js files
-  })
+  }))
   .pipe(jut(['falafel'])) // right over to jut
   .on('data', function(data) {
     console.log(data) // {filename: fullpath, line: lineNumber, module: 'falafel'}
