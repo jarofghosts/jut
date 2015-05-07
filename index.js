@@ -1,5 +1,6 @@
+'use strict';
+
 const path = require('path')
-    , util = require('util')
     , fs = require('fs')
 
 const detective = require('detective')
@@ -12,19 +13,16 @@ const CWD = process.cwd()
 module.exports = jut
 
 function jut(modules, _aliases) {
-  var aliases = _aliases || ['require']
+  const aliases = _aliases || ['require']
 
-  var stream = through.obj(parseFiles, Function())
-    , started = false
-    , files = []
+  const stream = through.obj(parseFiles, Function())
+      , files = []
+
+  let started = false
 
   modules = modules.map(makeAbsolute)
 
   return stream
-
-  function toSelector(alias) {
-    return select(util.format('call id[name=%s]:first-child + literal', alias))
-  }
 
   function parseFiles(chunk, enc, next) {
     files.push(chunk.toString(enc))
@@ -64,7 +62,7 @@ function jut(modules, _aliases) {
       function checkNode(required) {
         required = required.arguments[0]
 
-        var reqString = required.value
+        let reqString = required.value
 
         if(!(relative.test(reqString) && testRelative()) &&
             !modules.filter(checkRequires(reqString)).length) return
