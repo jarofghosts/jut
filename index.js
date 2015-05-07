@@ -1,21 +1,20 @@
-var path = require('path')
-  , util = require('util')
-  , fs = require('fs')
+const path = require('path')
+    , util = require('util')
+    , fs = require('fs')
 
-var select = require('cssauron-falafel')
-  , escape = require('quotemeta')
-  , through = require('through')
-  , falafel = require('falafel')
+const detective = require('detective')
+    , escape = require('quotemeta')
+    , through = require('through2')
 
-var CWD = process.cwd()
-  , relative = /^\./
+const CWD = process.cwd()
+    , relative = /^\./
 
 module.exports = jut
 
 function jut(modules, _aliases) {
-  var aliases = (_aliases || ['require']).map(toSelector)
+  var aliases = _aliases || ['require']
 
-  var stream = through(parseFiles, Function())
+  var stream = through.obj(parseFiles, Function())
     , started = false
     , files = []
 
@@ -27,54 +26,51 @@ function jut(modules, _aliases) {
     return select(util.format('call id[name=%s]:first-child + literal', alias))
   }
 
-  function parseFiles(chunk) {
-    files.push(chunk.toString())
+  function parseFiles(chunk, enc, next) {
+    files.push(chunk.toString(enc))
 
     if(!started) {
       started = true
       readFile(files.shift())
     }
-  }
 
-  function isRequire(node) {
-    var result
-
-    for(var i = 0, len = aliases.length; i < len; ++i) {
-      result = aliases[i](node)
-
-      if(result) return result
-    }
+    next()
   }
 
   function readFile(filename) {
     fs.readFile(path.resolve(CWD, filename), 'utf8', processFile)
 
     function processFile(err, data) {
-      if(err) process.exit(1)
-
-      var reqString
-        , required
+      if(err) {
+        return stream.emit('error', err)
+      }
 
       data = 'function ____() {\n' + data.replace(/^#!(.*?)\n/, '\n') + '\n}'
 
-      falafel(data, checkNode)
+      aliases.reduce(requires, []).forEach(checkNode)
 
-      if(!files.length) return stream.queue(null)
+      if(!files.length) {
+        return stream.push(null)
+      }
 
       readFile(files.shift())
 
-      function checkNode(node) {
-        required = isRequire(node)
+      function requires(requires, alias) {
+        return requires.concat(
+            detective.find(data, {word: alias, nodes: true}).nodes
+        )
+      }
 
-        if(!required) return
+      function checkNode(required) {
+        required = required.arguments[0]
 
-        reqString = required.value
+        var reqString = required.value
 
         if(!(relative.test(reqString) && testRelative()) &&
             !modules.filter(checkRequires(reqString)).length) return
 
-        stream.queue({
-            line: data.slice(0, node.range[0]).match(/\n/g).length
+        stream.push({
+            line: data.slice(0, required.start).match(/\n/g).length
           , module: required.value
           , filename: filename
         })
