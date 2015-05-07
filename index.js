@@ -1,24 +1,21 @@
-'use strict';
+var path = require('path')
+  , fs = require('fs')
 
-const path = require('path')
-    , fs = require('fs')
+var detective = require('detective')
+  , escape = require('quotemeta')
+  , through = require('through2')
 
-const detective = require('detective')
-    , escape = require('quotemeta')
-    , through = require('through2')
-
-const CWD = process.cwd()
-    , relative = /^\./
+var CWD = process.cwd()
+  , relative = /^\./
 
 module.exports = jut
 
 function jut(modules, _aliases) {
-  const aliases = _aliases || ['require']
+  var aliases = _aliases || ['require']
 
-  const stream = through.obj(parseFiles, Function())
-      , files = []
-
-  let started = false
+  var stream = through.obj(parseFiles, Function())
+    , started = false
+    , files = []
 
   modules = modules.map(makeAbsolute)
 
@@ -62,7 +59,7 @@ function jut(modules, _aliases) {
       function checkNode(required) {
         required = required.arguments[0]
 
-        let reqString = required.value
+        var reqString = required.value
 
         if(!(relative.test(reqString) && testRelative()) &&
             !modules.filter(checkRequires(reqString)).length) return
