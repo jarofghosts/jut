@@ -34,6 +34,7 @@
     "quotemeta": "0.0.0",
     "split": "0.2.10",
     "stream-police": "0.0.2",
+    "through": "^2.3.8",
     "through2": "^0.6.5"
   },
   "devDependencies": {
