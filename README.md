@@ -1,24 +1,15 @@
-jut
-===
+# jut
 
-[![Build Status](http://img.shields.io/travis/jarofghosts/jut.svg?style=flat)](https://travis-ci.org/jarofghosts/jut)
-[![npm install](http://img.shields.io/npm/dm/jut.svg?style=flat)](https://www.npmjs.org/package/jut)
+[![Build Status](https://img.shields.io/travis/jarofghosts/jut.svg?style=flat-square)](https://travis-ci.org/jarofghosts/jut)
+[![npm install](https://img.shields.io/npm/dm/jut.svg?style=flat-square)](https://www.npmjs.org/package/jut)
+[![npm version](https://img.shields.io/npm/v/jut.svg?style=flat-square)](https://www.npmjs.org/package/jut)
+[![License](https://img.shields.io/npm/l/jut.svg?style=flat-square)](https://github.com/jarofghosts/jut/blob/master/LICENSE)
 
 locate used modules
 
 ## installation
 
 `npm install -g jut`
-
-## whafor?
-
-`jut -m badmodule`
-
-or use it with [jung](https://github.com/jarofghosts/jung) and a test runner!
-
-`jung -f '\.js$' -- test_runner $(ls tests/**/*.js | jut -m '$JUNG_FILE' -Fnj)`
-
-or something else. the world is yours.
 
 ## usage
 
