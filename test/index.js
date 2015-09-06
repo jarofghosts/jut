@@ -4,24 +4,24 @@ var test = require('tape')
 
 var jut = require('../')
 
-test('finds regular modules', function(t) {
+test('finds regular modules', function (t) {
   t.plan(1)
 
   var jutStream = jut(['foop'])
-    , result = []
+  var result = []
 
-  jutStream.on('data', function(data) {
+  jutStream.on('data', function (data) {
     result.push(data)
   })
 
-  jutStream.on('end', function() {
+  jutStream.on('end', function () {
     t.deepEqual(
-        result
-      , [
-            {filename: fixPath('dummy.js'), line: 1, module: 'foop'}
-          , {filename: fixPath('dummy.js'), line: 3, module: 'foop/joop'}
-          , {filename: fixPath('dummy.js'), line: 5, module: 'foop/joop.doop'}
-        ]
+      result,
+      [
+        {filename: fixPath('dummy.js'), line: 1, module: 'foop'},
+        {filename: fixPath('dummy.js'), line: 3, module: 'foop/joop'},
+        {filename: fixPath('dummy.js'), line: 5, module: 'foop/joop.doop'}
+      ]
     )
   })
 
@@ -31,20 +31,20 @@ test('finds regular modules', function(t) {
   jutStream.end()
 })
 
-test('finds "required-into" modules', function(t) {
+test('finds "required-into" modules', function (t) {
   t.plan(1)
 
   var jutStream = jut(['foop/joop'])
-    , result = []
+  var result = []
 
-  jutStream.on('data', function(data) {
+  jutStream.on('data', function (data) {
     result.push(data)
   })
 
-  jutStream.on('end', function() {
+  jutStream.on('end', function () {
     t.deepEqual(
-        result
-      , [{filename: fixPath('dummy.js'), line: 3, module: 'foop/joop'}]
+      result,
+      [{filename: fixPath('dummy.js'), line: 3, module: 'foop/joop'}]
     )
   })
 
@@ -54,20 +54,20 @@ test('finds "required-into" modules', function(t) {
   jutStream.end()
 })
 
-test('finds "required-into" modules with dot', function(t) {
+test('finds "required-into" modules with dot', function (t) {
   t.plan(1)
 
   var jutStream = jut(['foop/joop.doop'])
-    , result = []
+  var result = []
 
-  jutStream.on('data', function(data) {
+  jutStream.on('data', function (data) {
     result.push(data)
   })
 
-  jutStream.on('end', function() {
+  jutStream.on('end', function () {
     t.deepEqual(
-        result
-      , [{filename: fixPath('dummy.js'), line: 5, module: 'foop/joop.doop'}]
+      result,
+      [{filename: fixPath('dummy.js'), line: 5, module: 'foop/joop.doop'}]
     )
   })
 
@@ -77,20 +77,20 @@ test('finds "required-into" modules with dot', function(t) {
   jutStream.end()
 })
 
-test('finds relative modules', function(t) {
+test('finds relative modules', function (t) {
   t.plan(1)
 
   var jutStream = jut(['./test/herp'])
-    , result = []
+  var result = []
 
-  jutStream.on('data', function(data) {
+  jutStream.on('data', function (data) {
     result.push(data)
   })
 
-  jutStream.on('end', function() {
+  jutStream.on('end', function () {
     t.deepEqual(
-        result
-      , [{filename: fixPath('pluto.js'), line: 4, module: './herp'}]
+      result,
+      [{filename: fixPath('pluto.js'), line: 4, module: './herp'}]
     )
   })
 
@@ -100,20 +100,20 @@ test('finds relative modules', function(t) {
   jutStream.end()
 })
 
-test('finds relative modules with extension', function(t) {
+test('finds relative modules with extension', function (t) {
   t.plan(1)
 
   var jutStream = jut(['./test/herp.js'])
-    , result = []
+  var result = []
 
-  jutStream.on('data', function(data) {
+  jutStream.on('data', function (data) {
     result.push(data)
   })
 
-  jutStream.on('end', function() {
+  jutStream.on('end', function () {
     t.deepEqual(
-        result
-      , [{filename: fixPath('pluto.js'), line: 4, module: './herp'}]
+      result,
+      [{filename: fixPath('pluto.js'), line: 4, module: './herp'}]
     )
   })
 
@@ -123,20 +123,20 @@ test('finds relative modules with extension', function(t) {
   jutStream.end()
 })
 
-test('finds implicit matches', function(t) {
+test('finds implicit matches', function (t) {
   t.plan(1)
 
   var jutStream = jut(['./test/herp/index.js'])
-    , result = []
+  var result = []
 
-  jutStream.on('data', function(data) {
+  jutStream.on('data', function (data) {
     result.push(data)
   })
 
-  jutStream.on('end', function() {
+  jutStream.on('end', function () {
     t.deepEqual(
-        result
-      , [{filename: fixPath('pluto.js'), line: 4, module: './herp'}]
+      result,
+      [{filename: fixPath('pluto.js'), line: 4, module: './herp'}]
     )
   })
 
@@ -146,20 +146,20 @@ test('finds implicit matches', function(t) {
   jutStream.end()
 })
 
-test('finds implicit matches without extension', function(t) {
+test('finds implicit matches without extension', function (t) {
   t.plan(1)
 
   var jutStream = jut(['./test/herp/index'])
-    , result = []
+  var result = []
 
-  jutStream.on('data', function(data) {
+  jutStream.on('data', function (data) {
     result.push(data)
   })
 
-  jutStream.on('end', function() {
+  jutStream.on('end', function () {
     t.deepEqual(
-        result
-      , [{filename: fixPath('pluto.js'), line: 4, module: './herp'}]
+      result,
+      [{filename: fixPath('pluto.js'), line: 4, module: './herp'}]
     )
   })
 
@@ -169,22 +169,20 @@ test('finds implicit matches without extension', function(t) {
   jutStream.end()
 })
 
-test('allows changing require alias', function(t) {
+test('allows changing require alias', function (t) {
   t.plan(1)
 
   var jutStream = jut(['./test/herp'], ['iunno'])
-    , result = []
+  var result = []
 
-  jutStream.on('data', function(data) {
+  jutStream.on('data', function (data) {
     result.push(data)
   })
 
-  jutStream.on('end', function() {
+  jutStream.on('end', function () {
     t.deepEqual(
-        result
-      , [
-            {filename: fixPath('pluto.js'), line: 5, module: './herp'}
-        ]
+      result,
+      [{filename: fixPath('pluto.js'), line: 5, module: './herp'}]
     )
   })
 
@@ -193,26 +191,26 @@ test('allows changing require alias', function(t) {
 
   jutStream.end()
 })
-test('can search for multiple modules', function(t) {
+test('can search for multiple modules', function (t) {
   t.plan(1)
 
   var jutStream = jut(['fabio', 'foop'])
-    , result = []
+  var result = []
 
-  jutStream.on('data', function(data) {
+  jutStream.on('data', function (data) {
     result.push(data)
   })
 
-  jutStream.on('end', function() {
+  jutStream.on('end', function () {
     t.deepEqual(
-        result
-      , [
-            {filename: fixPath('dummy.js'), line: 1, module: 'foop'}
-          , {filename: fixPath('dummy.js'), line: 3, module: 'foop/joop'}
-          , {filename: fixPath('dummy.js'), line: 5, module: 'foop/joop.doop'}
-          , {filename: fixPath('fake.js'), line: 1, module: 'foop'}
-          , {filename: fixPath('fake.js'), line: 2, module: 'fabio'}
-        ]
+      result,
+      [
+        {filename: fixPath('dummy.js'), line: 1, module: 'foop'},
+        {filename: fixPath('dummy.js'), line: 3, module: 'foop/joop'},
+        {filename: fixPath('dummy.js'), line: 5, module: 'foop/joop.doop'},
+        {filename: fixPath('fake.js'), line: 1, module: 'foop'},
+        {filename: fixPath('fake.js'), line: 2, module: 'fabio'}
+      ]
     )
   })
 
@@ -222,25 +220,25 @@ test('can search for multiple modules', function(t) {
   jutStream.end()
 })
 
-test('can search multiple files', function(t) {
+test('can search multiple files', function (t) {
   t.plan(1)
 
   var jutStream = jut(['foop'])
-    , result = []
+  var result = []
 
-  jutStream.on('data', function(data) {
+  jutStream.on('data', function (data) {
     result.push(data)
   })
 
-  jutStream.on('end', function() {
+  jutStream.on('end', function () {
     t.deepEqual(
-        result
-      , [
-            {filename: fixPath('dummy.js'), line: 1, module: 'foop'}
-          , {filename: fixPath('dummy.js'), line: 3, module: 'foop/joop'}
-          , {filename: fixPath('dummy.js'), line: 5, module: 'foop/joop.doop'}
-          , {filename: fixPath('fake.js'), line: 1, module: 'foop'}
-        ]
+      result,
+      [
+        {filename: fixPath('dummy.js'), line: 1, module: 'foop'},
+        {filename: fixPath('dummy.js'), line: 3, module: 'foop/joop'},
+        {filename: fixPath('dummy.js'), line: 5, module: 'foop/joop.doop'},
+        {filename: fixPath('fake.js'), line: 1, module: 'foop'}
+      ]
     )
   })
 
@@ -251,17 +249,17 @@ test('can search multiple files', function(t) {
   jutStream.end()
 })
 
-test('reports nothing if none found', function(t) {
+test('reports nothing if none found', function (t) {
   t.plan(1)
 
   var jutStream = jut(['barb'])
-    , result = []
+  var result = []
 
-  jutStream.on('data', function(data) {
+  jutStream.on('data', function (data) {
     result.push(data)
   })
 
-  jutStream.on('end', function() {
+  jutStream.on('end', function () {
     t.equal(result.length, 0)
   })
 
@@ -272,6 +270,6 @@ test('reports nothing if none found', function(t) {
   jutStream.end()
 })
 
-function fixPath(filename) {
+function fixPath (filename) {
   return path.resolve(__dirname, filename)
 }

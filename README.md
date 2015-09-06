@@ -42,17 +42,17 @@ something like:
 
 ```js
 var jut = require('jut')
-  , ls = require('ls-stream') // for example
-  , convert = require('dotpath-stream')
-  , filter = require('stream-police')
+var ls = require('ls-stream') // for example
+var convert = require('dotpath-stream')
+var filter = require('stream-police')
 
 ls('apps')
   .pipe(convert('path')) // reduce ls-stream object to path string
-  .pipe(filter(function(data) {
+  .pipe(filter(function (data) {
     return /\.js$/.test(data.toString()) // only js files
   }))
   .pipe(jut(['falafel'])) // right over to jut
-  .on('data', function(data) {
+  .on('data', function (data) {
     console.log(data) // {filename: fullpath, line: lineNumber, module: 'falafel'}
   })
 ```
