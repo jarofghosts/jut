@@ -3,6 +3,7 @@
 [![Build Status](https://img.shields.io/travis/jarofghosts/jut.svg?style=flat-square)](https://travis-ci.org/jarofghosts/jut)
 [![npm install](https://img.shields.io/npm/dm/jut.svg?style=flat-square)](https://www.npmjs.org/package/jut)
 [![npm version](https://img.shields.io/npm/v/jut.svg?style=flat-square)](https://www.npmjs.org/package/jut)
+[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/feross/standard)
 [![License](https://img.shields.io/npm/l/jut.svg?style=flat-square)](https://github.com/jarofghosts/jut/blob/master/LICENSE)
 
 locate used modules
