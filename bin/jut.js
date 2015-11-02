@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-var fileStream = require('stream').Readable()
 var util = require('util')
 var path = require('path')
 var fs = require('fs')
@@ -11,6 +10,7 @@ var dps = require('dotpath-stream')
 var color = require('bash-color')
 var through = require('through2')
 var split = require('split')
+var strum = require('strum')
 var nopt = require('nopt')
 
 var pkg = require('../package.json')
@@ -64,16 +64,6 @@ function bin () {
     return
   }
 
-  fileStream._read = function () {
-    if (options.file) {
-      options.file.forEach(function (file) {
-        this.push(file)
-      }, this)
-    }
-
-    this.push(null)
-  }
-
   if (!options.file && !options.dir && process.stdin.isTTY) {
     options.dir = CWD
   }
@@ -83,7 +73,7 @@ function bin () {
   }
 
   if (options.file) {
-    input = fileStream
+    input = strum(options.file)
   } else if (options.dir) {
     input = lsstream(path.resolve(options.dir)).pipe(dps('path'))
   } else {
